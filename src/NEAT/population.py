@@ -26,6 +26,19 @@ class Population:
             new_species.representative = g
             self.species.append(new_species)
 
+    def _clear_species(self) -> None:
+        """
+        Remove species that are stagnant (has not improved for 10 generations). For remaining species,
+        set the most fit genome as the representative and then clear each species' genomes.
+        """
+        for i in range(len(self.species) - 1, -1, -1):
+            if self.species[i].improvement < 1:
+                self.species.pop(i)
+            else:
+                best_genome = max(self.species[i].genomes, key=lambda x: x.fitness)
+                self.species[i].representative = best_genome
+                self.species[i].genomes.clear()
+
     def evaluate_population(self, environment: Environment) -> Dict[int, Genome]:
         """
         Uses the given environment's evaluate function to assign a fitness score to each genome
@@ -35,16 +48,12 @@ class Population:
         environment.evaluate(all_genomes)
         return {genome.fitness: genome for genome in sorted(all_genomes, key=lambda x: x.fitness, reverse=True)}
 
-    def breed_new_generation(self):
+    def breed_new_generation(self) -> None:
         """
         Breeds the new generation by crossover and mutation. Each species is alloted a portion of the new
         population based on their average fitness. Any leftover slots are filled randomly. Breeding should happen
         between genomes of the same species, but there is a 0.1% chance for genomes from separate species to breed.
         """
-        self._remove_stagnant_species()
-        self._remove_unfit_species()
-        self._clear_species()  # Set each species' representative and then clear their genomes and remove empty species
-
         new_population = []
 
         total_adjusted_fitness = sum(species.average_fitness for species in self.species)
@@ -66,6 +75,8 @@ class Population:
             child = Genome.crossover(parent1, parent2)
             child.mutate()
             new_population.append(child)
+
+        self._clear_species()
 
         for child in new_population:
             self._add_to_species(child)
