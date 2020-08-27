@@ -1,4 +1,5 @@
 import random
+from math import floor
 from typing import Dict, List
 
 from environment import Environment
@@ -57,7 +58,7 @@ class Population:
         new_population = []
 
         total_adjusted_fitness = sum(species.average_fitness for species in self.species)
-        proportions = [species.average_fitness // total_adjusted_fitness for species in self.species]
+        proportions = [floor((species.average_fitness / total_adjusted_fitness) * 20) for species in self.species]
 
         for allocated_children, species in zip(proportions, self.species):
             for _ in range(allocated_children):
