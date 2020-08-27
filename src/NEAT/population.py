@@ -62,7 +62,7 @@ class Population:
 
         for allocated_children, species in zip(proportions, self.species):
             for _ in range(allocated_children):
-                parent1, parent2 = random.sample(species.genomes, 2).sort(key=lambda x: x.fitness, reverse=True)
+                parent1, parent2 = sorted(random.sample(species.genomes, 2), key=lambda x: x.fitness, reverse=True)
                 child = Genome.crossover(parent1, parent2)
                 child.mutate()
                 new_population.append(child)
