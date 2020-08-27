@@ -1,7 +1,7 @@
 from collections import deque
 from typing import List
 
-from genome import Genome
+from .genome import Genome
 
 
 class Species:

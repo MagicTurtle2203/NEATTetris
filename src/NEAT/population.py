@@ -2,9 +2,9 @@ import random
 from math import floor
 from typing import Dict, List
 
-from environment import Environment
-from genome import Genome
-from species import Species
+from .environment import Environment
+from .genome import Genome
+from .species import Species
 
 
 class Population:
