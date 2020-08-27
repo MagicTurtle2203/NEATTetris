@@ -1,13 +1,13 @@
 from collections import deque
-from typing import List, Optional
+from typing import List
 
 from .genome import Genome
 
 
 class Species:
-    def __init__(self):
+    def __init__(self, representative: Genome):
         self.genomes: List[Genome] = []
-        self.representative: Optional[Genome] = None
+        self.representative = representative
         self.af_queue = deque(maxlen=10)
 
     @property

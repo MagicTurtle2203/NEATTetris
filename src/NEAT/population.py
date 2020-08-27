@@ -22,9 +22,8 @@ class Population:
                 species.genomes.append(g)
                 break
         else:
-            new_species = Species()
+            new_species = Species(g)
             new_species.genomes.append(g)
-            new_species.representative = g
             self.species.append(new_species)
 
     def _clear_species(self) -> None:
