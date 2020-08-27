@@ -8,19 +8,21 @@ class Species:
     def __init__(self):
         self.genomes: List[Genome] = []
         self.representative: Genome = None
-        self.af_queue = deque()
+        self.af_queue = deque(maxlen=10)
 
     @property
     def size(self) -> int:
         """Returns the amount of genomes in the species"""
-        pass
+        return len(self.genomes)
 
     @property
     def average_fitness(self) -> int:
         """Calculates the floor of the average fitness of all genomes in the species"""
-        pass
+        avg = sum(genome.fitness for genome in self.genomes) / len(self.genomes)
+        self.af_queue.append(avg)
+        return avg
 
     @property
     def improvement(self) -> float:
         """Calculates the amount of improvement in average fitness over the past 10 generations"""
-        pass
+        return self.af_queue[-1] - self.af_queue[0]
