@@ -13,7 +13,7 @@ class Node:
     node_id = 0
     cache = {}
 
-    def __init__(self, node_type: NodeType, value: float = 0):
+    def __init__(self, node_type: NodeType, value: float = 0.0):
         self.inputs: List[Node] = []
         self.weights: List[float] = []
         self.bias = 0
