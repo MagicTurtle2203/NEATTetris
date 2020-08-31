@@ -1,44 +1,60 @@
 from __future__ import annotations
 
-from typing import List, Sequence
+from typing import Dict, List, Sequence, Union
 
-from connection_gene import ConnectionGene
+import numpy as np
 
+from .connection_gene import ConnectionGene
+from .node import Node
 
-INPUTS = 240 * 256
-OUTPUTS = 12
+NUM_INPUTS = 20 * 10
+NUM_OUTPUTS = 12
 
 
 class Genome:
     def __init__(self):
         self.genes: List[ConnectionGene] = []
-        self.fitness = 0
+        self.biases: Dict[int, float] = {}
 
-    @classmethod
-    def crossover(cls, parent1: Genome, parent2: Genome) -> Genome:
-        """
-        Creates a new genome from two parent genomes. parent1 should be the fitter parent.
-        Genes that are shared by both parents are randomly selected to go into the new child.
-        Disjoint genes are taken from parent1 (the fitter parent).
-        """
-        pass
+        self.nodes: Dict[int, Node] = {}
 
-    def is_same_species(self, other: Genome) -> bool:
-        pass
-
-    def mutate(self) -> None:
-        """
-        Randomly mutates the genome in a number of different ways:
-        - For each connection, perturb each weight
-        - Add a connection
-        - Add a node
-        """
-        pass
+        self.input_keys = list(range(-NUM_INPUTS, 0))
+        self.output_keys = list(range(0, NUM_OUTPUTS))
 
     def generate_network(self) -> None:
-        """Generate the neural network based on the connection genes"""
-        pass
+        self.nodes.clear()
 
-    def evaluate_input(self, input: Sequence[float]) -> List[float]:
-        """Runs the input through the generated neural network. generate_network must be run first."""
-        pass
+        # set up input nodes
+        for key in self.input_keys:
+            self.nodes[key] = Node()
+
+        # place output nodes
+        for key in self.output_keys:
+            self.nodes[key] = Node()
+
+        # make connections
+        for gene in self.genes:
+            if not gene.enabled:
+                continue
+
+            if gene.in_node not in self.nodes:
+                self.nodes[gene.in_node] = Node()
+            if gene.out_node not in self.nodes:
+                self.nodes[gene.out_node] = Node()
+
+            self.nodes[gene.out_node].add_input(self.nodes[gene.in_node], gene.weight)
+            self.nodes[gene.out_node].bias = self.biases.get(gene.out_node, 0)
+
+    def evaluate(self, inputs: Union[np.ndarray, Sequence[float]]) -> np.ndarray:
+        if not isinstance(inputs, np.ndarray):
+            inputs = np.array(inputs, dtype=float)
+
+        assert len(inputs.shape) == 1, f"Expected 1D array, got {len(inputs.shape)}D array instead"  # type: ignore
+        assert inputs.shape == (  # type: ignore
+            NUM_INPUTS,
+        ), f"Expected {NUM_INPUTS} input(s), got {inputs.shape[0]} input(s) instead"  # type: ignore
+
+        for idx, data in enumerate(inputs, -NUM_INPUTS):
+            self.nodes[idx].value = data
+
+        return np.fromiter((self.nodes[idx].calculate_value() for idx in self.output_keys))
