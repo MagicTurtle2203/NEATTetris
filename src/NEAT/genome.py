@@ -188,6 +188,11 @@ class Genome:
             if not gene.enabled:
                 continue
 
+            if gene.in_node >= len(self.output_keys) and gene.in_node not in self.hidden_node_keys:
+                self.hidden_node_keys.add(gene.in_node)
+            if gene.out_node >= len(self.output_keys) and gene.out_node not in self.hidden_node_keys:
+                self.hidden_node_keys.add(gene.out_node)
+
             if gene.in_node not in self.nodes:
                 self.nodes[gene.in_node] = Node()
             if gene.out_node not in self.nodes:
