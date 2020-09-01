@@ -20,9 +20,6 @@ class Node:
     @classmethod
     def reset_cache(cls) -> None:
         cls.cache.clear()
-
-    @classmethod
-    def reset_ids(cls) -> None:
         cls.node_id = 0
 
     @staticmethod
