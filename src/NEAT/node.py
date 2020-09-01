@@ -7,7 +7,7 @@ class Node:
     node_id = 0
     cache = {}
 
-    def __init__(self, value: float = 0.0):
+    def __init__(self, value: float = 0.0) -> None:
         self.inputs: List[Node] = []
         self.weights: List[float] = []
         self.bias = 0

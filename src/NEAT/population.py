@@ -8,7 +8,7 @@ from .species import Species
 
 
 class Population:
-    def __init__(self):
+    def __init__(self) -> None:
         self.species: List[Species] = []
         self.generation = 0
 

@@ -5,7 +5,7 @@ from .genome import Genome
 
 
 class Species:
-    def __init__(self, representative: Genome):
+    def __init__(self, representative: Genome) -> None:
         self.genomes: List[Genome] = []
         self.representative = representative
         self.af_queue = deque(maxlen=10)
