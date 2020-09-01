@@ -166,8 +166,8 @@ class Genome:
         shared_genes = set(this_genes).intersection(other_genes)
         disjoint_genes = set(this_genes).symmetric_difference(other_genes)
 
-        avg_weight_diff = (
-            sum(this_genes[i].weight - other_genes[i].weight for i in shared_genes) + 1 / len(shared_genes) + 1
+        avg_weight_diff = sum(this_genes[i].weight - other_genes[i].weight for i in shared_genes) + 1 / (
+            len(shared_genes) + 1
         )
 
         compatibility = (c1 * len(disjoint_genes)) / N + c2 * avg_weight_diff
