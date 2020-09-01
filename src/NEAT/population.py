@@ -2,6 +2,7 @@ import random
 from math import floor
 from typing import Dict, List
 
+from .connection_gene import ConnectionGene
 from .environment import Environment
 from .genome import Genome
 from .species import Species
@@ -42,13 +43,14 @@ class Population:
                 self.species[i].representative = best_genome
                 self.species[i].genomes.clear()
 
-    def evaluate_population(self, environment: Environment) -> Dict[int, Genome]:
+    def evaluate_population(self, environment: Environment, render: bool = False) -> Dict[int, Genome]:
         """
         Uses the given environment's evaluate function to assign a fitness score to each genome
         Modifies each genome's fitness attribute and returns a dictionary in the format {fitness: genome}
         """
         all_genomes = [genome for species in self.species for genome in species.genomes]
-        environment.evaluate(all_genomes)
+        for genome in all_genomes:
+            environment.evaluate(genome, render)
         return {genome.fitness: genome for genome in sorted(all_genomes, key=lambda x: x.fitness, reverse=True)}
 
     def breed_new_generation(self) -> None:
@@ -57,6 +59,8 @@ class Population:
         population based on their average fitness. Any leftover slots are filled randomly. Breeding should happen
         between genomes of the same species, but there is a 0.1% chance for genomes from separate species to breed.
         """
+        ConnectionGene.reset_cache()
+
         new_population = []
 
         total_adjusted_fitness = sum(species.average_fitness for species in self.species)
