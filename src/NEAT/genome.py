@@ -159,6 +159,7 @@ class Genome:
         c2 = 0.4
 
         N = max(len(self.genes), len(other.genes))
+        N = 1 if N < 20 else N
 
         this_genes = {gene.innovation_number: gene for gene in self.genes}
         other_genes = {gene.innovation_number: gene for gene in other.genes}
