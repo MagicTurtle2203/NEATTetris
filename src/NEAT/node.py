@@ -1,26 +1,19 @@
 from __future__ import annotations
 
-from enum import auto, Enum
 from typing import List
-
-
-class NodeType(Enum):
-    INPUT = auto
-    COMPUTE = auto
 
 
 class Node:
     node_id = 0
     cache = {}
 
-    def __init__(self, node_type: NodeType, value: float = 0.0):
+    def __init__(self, value: float = 0.0):
         self.inputs: List[Node] = []
         self.weights: List[float] = []
         self.bias = 0
 
         self.value = value
 
-        self.type = node_type
         self.id = Node.node_id
         Node.node_id += 1
 
