@@ -102,6 +102,10 @@ class Genome:
         connection_to_split.enabled = False
         self.hidden_node_keys.append(new_node_key)
 
+    @classmethod
+    def crossover(cls, parent1: Genome, parent2: Genome) -> Genome:
+        return cls(1, 2)
+
     def mutate(self) -> None:
         if self.rng.random() < 0.03:
             self._mutate_add_node()
@@ -121,14 +125,11 @@ class Genome:
 
         N = max(len(self.genes), len(other.genes))
 
-        this_in = {gene.innovation_number for gene in self.genes}
-        other_in = {gene.innovation_number for gene in other.genes}
+        this_genes = {gene.innovation_number: gene for gene in self.genes}
+        other_genes = {gene.innovation_number: gene for gene in other.genes}
 
-        shared_genes = this_in & other_in
-        disjoint_genes = this_in ^ other_in
-
-        this_genes = {gene.innovation_number: gene for gene in self.genes if gene.innovation_number in shared_genes}
-        other_genes = {gene.innovation_number: gene for gene in other.genes if gene.innovation_number in shared_genes}
+        shared_genes = set(this_genes).intersection(other_genes)
+        disjoint_genes = set(this_genes).symmetric_difference(other_genes)
 
         avg_weight_diff = sum(this_genes[i].weight - other_genes[i].weight for i in shared_genes) / len(shared_genes)
 
