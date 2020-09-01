@@ -6,6 +6,9 @@ from .environment import Environment
 from .genome import Genome
 from .species import Species
 
+NUM_INPUTS = 200
+NUM_OUTPUTS = 12
+
 
 class Population:
     def __init__(self) -> None:
@@ -13,7 +16,7 @@ class Population:
         self.generation = 0
 
         for _ in range(20):
-            self._add_to_species(Genome())
+            self._add_to_species(Genome(NUM_INPUTS, NUM_OUTPUTS))
 
     def _add_to_species(self, g: Genome) -> None:
         """Separates genomes into separate species"""
