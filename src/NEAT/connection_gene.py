@@ -21,9 +21,6 @@ class ConnectionGene:
         self.enabled = enabled
         self.innovation_number = self._get_innovation_number() if innovation_number is None else innovation_number
 
-    def __copy__(self) -> ConnectionGene:
-        return type(self)(self.in_node, self.out_node, self.weight, self.enabled, self.innovation_number)
-
     def __eq__(self, other: ConnectionGene) -> bool:
         return self.in_node == other.in_node and self.out_node == other.out_node
 
