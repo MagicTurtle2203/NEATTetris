@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from copy import copy
-from typing import Dict, List, Sequence, Union
+from typing import Dict, List, Sequence, Set, Union
 
 import numpy as np
 
@@ -16,9 +16,9 @@ class Genome:
         self.biases: Dict[int, float] = {}
 
         self.nodes: Dict[int, Node] = {}
-        self.input_keys = list(range(-num_inputs, 0))
-        self.output_keys = list(range(0, num_outputs))
-        self.hidden_node_keys: List[int] = []
+        self.input_keys = set(range(-num_inputs, 0))
+        self.output_keys = set(range(0, num_outputs))
+        self.hidden_node_keys: Set[int] = set()
 
         self.fitness = 0
 
@@ -71,7 +71,7 @@ class Genome:
         by a random amount and 10% chance of replacing the bias with a random value. Will create
         a bias if it doesn't already exist for a node.
         """
-        for node_key in self.output_keys + self.hidden_node_keys:
+        for node_key in self.output_keys | self.hidden_node_keys:
             if self.rng.random() < 0.9:
                 if node_key not in self.biases:
                     self.biases[node_key] = 0
@@ -80,16 +80,19 @@ class Genome:
                 self.biases[node_key] = self.rng.normal()
 
     def _mutate_add_connection(self) -> None:
-        in_node = self.rng.choice(self.input_keys + self.hidden_node_keys)
-        out_node = self.rng.choice(self.hidden_node_keys + self.output_keys)
+        allowed_in = list(self.input_keys | self.hidden_node_keys)
+        allowed_out = list(self.hidden_node_keys | self.output_keys)
+
+        in_node = self.rng.choice(allowed_in)
+        out_node = self.rng.choice(allowed_out)
 
         while (
             ConnectionGene(in_node, out_node) in self.genes
             or in_node == out_node
             or not self._check_distance(in_node, out_node)
         ):
-            in_node = self.rng.choice(self.input_keys + self.hidden_node_keys)
-            out_node = self.rng.choice(self.hidden_node_keys + self.output_keys)
+            in_node = self.rng.choice(allowed_in)
+            out_node = self.rng.choice(allowed_out)
 
         self.genes.append(ConnectionGene(in_node, out_node, self.rng.normal()))
 
@@ -102,7 +105,7 @@ class Genome:
         self.genes.append(ConnectionGene(new_node_key, connection_to_split.out_node, connection_to_split.weight))
 
         connection_to_split.enabled = False
-        self.hidden_node_keys.append(new_node_key)
+        self.hidden_node_keys.add(new_node_key)
 
     @classmethod
     def crossover(cls, parent1: Genome, parent2: Genome) -> Genome:
