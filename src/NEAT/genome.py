@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from copy import copy
 from typing import Dict, List, Sequence, Union
 
 import numpy as np
@@ -15,10 +16,11 @@ class Genome:
         self.biases: Dict[int, float] = {}
 
         self.nodes: Dict[int, Node] = {}
-
         self.input_keys = list(range(-num_inputs, 0))
         self.output_keys = list(range(0, num_outputs))
         self.hidden_node_keys: List[int] = []
+
+        self.fitness = 0
 
         self.rng = np.random.default_rng()
 
@@ -104,7 +106,37 @@ class Genome:
 
     @classmethod
     def crossover(cls, parent1: Genome, parent2: Genome) -> Genome:
-        return cls(1, 2)
+        rng = np.random.default_rng()
+
+        parent1_genes = {gene.innovation_number: gene for gene in parent1.genes}
+        parent2_genes = {gene.innovation_number: gene for gene in parent2.genes}
+
+        new_genes: List[ConnectionGene] = []
+
+        shared_genes = set(parent1_genes).intersection(parent2_genes)
+
+        for innovation_number in shared_genes:
+            new_genes.append(copy(rng.choice((parent1_genes[innovation_number], parent2_genes[innovation_number]))))
+
+        if parent1.fitness == parent2.fitness:
+            for innovation_number in set(parent1_genes).difference(shared_genes):
+                if rng.random() < 0.8:
+                    new_genes.append(copy(parent1_genes[innovation_number]))
+
+            for innovation_number in set(parent2_genes).difference(shared_genes):
+                if rng.random() < 0.8:
+                    new_genes.append(copy(parent2_genes[innovation_number]))
+        else:
+            for innovation_number in set(parent1_genes).difference(shared_genes):
+                new_genes.append(copy(parent1_genes[innovation_number]))
+
+        biases = {**parent2.biases, **parent1.biases}
+
+        new_genome = cls(len(parent1.input_keys), len(parent1.output_keys))
+        new_genome.genes.extend(new_genes)
+        new_genome.biases = biases
+
+        return new_genome
 
     def mutate(self) -> None:
         if self.rng.random() < 0.03:
