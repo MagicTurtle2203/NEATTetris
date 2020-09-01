@@ -18,8 +18,9 @@ class Species:
     @property
     def average_fitness(self) -> int:
         """Calculates the floor of the average fitness of all genomes in the species"""
-        avg = sum(genome.fitness for genome in self.genomes) // len(self.genomes)
+        avg = sum(genome.fitness for genome in self.genomes) + 1 // len(self.genomes) + 1
         self.af_queue.append(avg)
+        print("SPECIES:", avg)
         return avg
 
     @property
