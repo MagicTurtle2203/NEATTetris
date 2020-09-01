@@ -10,3 +10,9 @@ class ConnectionGene:
 
     def __eq__(self, other: ConnectionGene) -> bool:
         return self.in_node == other.in_node and self.out_node == other.out_node
+
+    def __repr__(self) -> str:
+        return (
+            f"ConnectionGene(in_node={self.in_node}, out_node={self.out_node}, "
+            f"weight={self.weight}, enabled={self.enabled})"
+        )
