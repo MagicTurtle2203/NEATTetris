@@ -115,6 +115,27 @@ class Genome:
         if self.rng.random() < 0.8:
             self._mutate_biases()
 
+    def is_same_species(self, other: Genome) -> bool:
+        c1 = 1.0
+        c2 = 0.4
+
+        N = max(len(self.genes), len(other.genes))
+
+        this_in = {gene.innovation_number for gene in self.genes}
+        other_in = {gene.innovation_number for gene in other.genes}
+
+        shared_genes = this_in & other_in
+        disjoint_genes = this_in ^ other_in
+
+        this_genes = {gene.innovation_number: gene for gene in self.genes if gene.innovation_number in shared_genes}
+        other_genes = {gene.innovation_number: gene for gene in other.genes if gene.innovation_number in shared_genes}
+
+        avg_weight_diff = sum(this_genes[i].weight - other_genes[i].weight for i in shared_genes) / len(shared_genes)
+
+        compatibility = (c1 * len(disjoint_genes)) / N + c2 * avg_weight_diff
+
+        return compatibility < 3.0
+
     def generate_network(self) -> None:
         self.nodes.clear()
 
